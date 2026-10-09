@@ -15,13 +15,11 @@
       "Skill(iwsdk-ray)",
       "Skill(iwsdk-ui)",
       "mcp__iwsdk-runtime__*",
-      "mcp__iwsdk-reference__*",
-      "mcp__metavr__*"
+      "mcp__iwsdk-reference__*"
     ]
   },
   "enabledMcpjsonServers": [
     "iwsdk-runtime",
-    "iwsdk-reference",
-    "metavr"
+    "iwsdk-reference"
   ]
 }
