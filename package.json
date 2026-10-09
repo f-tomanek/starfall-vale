@@ -1,0 +1,44 @@
+{
+  "name": "starfall-vale",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "iwsdk dev restart --open --foreground",
+    "dev:runtime": "vite",
+    "dev:down": "iwsdk dev down",
+    "dev:status": "iwsdk dev status",
+    "reference:status": "iwsdk reference status",
+    "reference:warmup": "iwsdk reference warmup",
+    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "validate": "vitest run tests/content.test.ts",
+    "dev:http": "vite --mode http --port 8082"
+  },
+  "dependencies": {
+    "@iwsdk/core": "1.0.1",
+    "@pmndrs/uikit": "1.0.76",
+    "@pmndrs/uikit-horizon": "1.0.76",
+    "@pmndrs/uikit-lucide": "1.0.76",
+    "three": "npm:super-three@0.181.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@iwsdk/cli": "1.0.1",
+    "@iwsdk/reference": "1.0.1",
+    "@iwsdk/vite-plugin-dev": "1.0.1",
+    "@types/three": "0.181.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.7",
+    "vitest": "3.2.4"
+  },
+  "overrides": {
+    "sharp": "0.35.4",
+    "three": "npm:super-three@0.181.0"
+  },
+  "engines": {
+    "node": ">=20.19.0 <21.0.0-0 || >=22.12.0 <23.0.0-0 || >=24.0.0"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "maren",
+  "owner": "maren",
+  "entries": [
+    { "when": { "not": { "flag": "met_maren" } }, "start": "first_1" },
+    { "when": { "flag": "act1_complete" }, "start": "after_1" },
+    { "start": "again_1" }
+  ],
+  "nodes": {
+    "first_1": { "text": "Stop there. The Warden hasn't spoken to anyone in my lifetime, and it picks an outsider?", "choices": [
+      { "text": "I don't know why it chose me. I'd like to help.", "effects": [{ "addTrust": { "character": "maren", "amount": 2 } }, { "setFlag": "maren_honest" }], "next": "honest" },
+      { "text": "I'm only a guest here. I'll follow your rules.", "effects": [{ "addTrust": { "character": "maren", "amount": 1 } }], "next": "humble" },
+      { "text": "Clearly it has excellent taste.", "effects": [{ "addTrust": { "character": "maren", "amount": -1 } }], "next": "boast" }
+    ] },
+    "honest": { "text": "Hm, an honest answer. Those are rarer than strangers.", "next": "first_2" },
+    "humble": { "text": "Good. Rules kept us alive for three hundred years.", "next": "first_2" },
+    "boast": { "text": "Taste, wonderful. The sky is falling and I get a comedian.", "next": "first_2" },
+    "first_2": { "text": "Go on in, then. Tobbin's workshop is on the right, if the Warden wants you fed and tinkered at.", "effects": [{ "setFlag": "met_maren" }], "end": true },
+
+    "again_1": { "text": "Still here? The workshop is on the right, follow the hammering.", "choices": [
+      { "text": "What is this place?", "next": "place" },
+      { "text": "Why don't you trust me?", "next": "trust_low", "when": { "trust": { "character": "maren", "lte": 1 } } },
+      { "text": "Thank you for letting me in.", "next": "thanks" }
+    ] },
+    "place": { "text": "Wreckhaven, built inside the bones of a ship that fell from the stars. Most days it feels like home.", "next": "END" },
+    "trust_low": { "text": "Because the last time the sky did something new, half the eastern isles fell. Earn it.", "next": "END" },
+    "thanks": { "text": "Don't thank me yet. Thank me when the islands stop sinking.", "next": "END" },
+
+    "after_1": { "text": "The Warden is awake, and the lanterns are brighter. I suppose that counts for something.", "choices": [
+      { "text": "It counts for a lot.", "effects": [{ "addTrust": { "character": "maren", "amount": 1 } }, { "setFlag": "maren_warmed" }], "when": { "not": { "flag": "maren_warmed" } }, "next": "after_warm" },
+      { "text": "I'll keep going.", "next": "END" }
+    ] },
+    "after_warm": { "text": "Perhaps. Don't let it go to your head, Stranger.", "next": "END" }
+  }
+}

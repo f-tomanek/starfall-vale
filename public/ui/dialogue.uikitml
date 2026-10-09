@@ -1,0 +1,56 @@
+<!--
+  Dialogue panel. Sizes are UIKit units (1 = 1 cm). Text is filled at runtime
+  by src/systems/dialogue.ts; unused choices are hidden with display: none.
+-->
+<style>
+  .root {
+    flex-direction: column;
+    width: 96;
+    padding-top: 3.5;
+    padding-bottom: 3.5;
+    padding-left: 4;
+    padding-right: 4;
+    gap: 1.6;
+    background-color: #0f171e;
+    border-radius: 3;
+    border-width: 0.35;
+    border-color: #ffb347;
+  }
+  .speaker {
+    font-size: 3.4;
+    font-weight: 700;
+    color: #ffb347;
+  }
+  .line {
+    font-size: 3.6;
+    line-height: 1.35;
+    color: #f4f1e8;
+    margin-bottom: 1;
+  }
+  .choice {
+    padding-top: 1.5;
+    padding-bottom: 1.5;
+    padding-left: 2.4;
+    padding-right: 2.4;
+    border-radius: 1.6;
+    background-color: #1e2c37;
+    border-width: 0.25;
+    border-color: #2f4757;
+    font-size: 3.1;
+    color: #f4f1e8;
+    cursor: pointer;
+  }
+  .choice:hover {
+    background-color: #3fa7a3;
+    border-color: #9ff7ef;
+    color: #0b1014;
+  }
+</style>
+<div class="root">
+  <div id="speaker" class="speaker">Speaker</div>
+  <div id="line" class="line">Dialogue line goes here.</div>
+  <div id="choice0" class="choice">1. First choice</div>
+  <div id="choice1" class="choice">2. Second choice</div>
+  <div id="choice2" class="choice">3. Third choice</div>
+  <div id="choice3" class="choice">4. Fourth choice</div>
+</div>

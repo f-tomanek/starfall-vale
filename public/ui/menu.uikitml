@@ -1,0 +1,140 @@
+<!--
+  Title / pause menu with three pages (main, journal, settings).
+  src/systems/menu.ts switches pages with display: none and fills the text.
+-->
+<style>
+  .root {
+    flex-direction: column;
+    width: 84;
+    padding-top: 4;
+    padding-bottom: 4;
+    padding-left: 4.5;
+    padding-right: 4.5;
+    gap: 1.6;
+    background-color: #0f171e;
+    border-radius: 3;
+    border-width: 0.35;
+    border-color: #3fa7a3;
+  }
+  .title {
+    font-size: 6;
+    font-weight: 700;
+    color: #ffb347;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: 2.6;
+    color: #a9c9c6;
+    text-align: center;
+    margin-bottom: 1.5;
+  }
+  .page {
+    flex-direction: column;
+    gap: 1.4;
+  }
+  .btn {
+    padding-top: 1.7;
+    padding-bottom: 1.7;
+    padding-left: 2.4;
+    padding-right: 2.4;
+    border-radius: 1.6;
+    background-color: #1e2c37;
+    border-width: 0.25;
+    border-color: #2f4757;
+    font-size: 3.2;
+    color: #f4f1e8;
+    text-align: center;
+    cursor: pointer;
+  }
+  .btn:hover {
+    background-color: #3fa7a3;
+    border-color: #9ff7ef;
+    color: #0b1014;
+  }
+  .row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2;
+  }
+  .label {
+    font-size: 2.9;
+    color: #d6e2e0;
+  }
+  .value {
+    width: 34;
+    padding-top: 1.2;
+    padding-bottom: 1.2;
+    border-radius: 1.4;
+    background-color: #1e2c37;
+    border-width: 0.25;
+    border-color: #2f4757;
+    font-size: 2.8;
+    color: #ffd27a;
+    text-align: center;
+    cursor: pointer;
+  }
+  .value:hover {
+    background-color: #3fa7a3;
+    color: #0b1014;
+  }
+  .qtitle {
+    font-size: 3.6;
+    font-weight: 700;
+    color: #ffb347;
+  }
+  .qdesc {
+    font-size: 2.6;
+    line-height: 1.35;
+    color: #c9d6d4;
+    margin-bottom: 0.8;
+  }
+  .obj {
+    font-size: 2.8;
+    color: #f4f1e8;
+  }
+  .small {
+    font-size: 2.4;
+    color: #8fa9a6;
+  }
+</style>
+<div class="root">
+  <div id="title" class="title">Starfall Vale</div>
+  <div id="subtitle" class="subtitle">Subtitle</div>
+
+  <div id="page_main" class="page">
+    <div id="btn_continue" class="btn">Continue</div>
+    <div id="btn_new" class="btn">New Game</div>
+    <div id="btn_resume" class="btn">Resume</div>
+    <div id="btn_journal" class="btn">Journal</div>
+    <div id="btn_settings" class="btn">Settings</div>
+    <div id="btn_vr" class="btn">Enter VR</div>
+    <div id="btn_quit" class="btn">Save and Quit to Title</div>
+    <div id="main_note" class="small">Note</div>
+  </div>
+
+  <div id="page_journal" class="page">
+    <div id="j_title" class="qtitle">Quest</div>
+    <div id="j_desc" class="qdesc">Description</div>
+    <div id="j_obj0" class="obj">-</div>
+    <div id="j_obj1" class="obj">-</div>
+    <div id="j_obj2" class="obj">-</div>
+    <div id="j_obj3" class="obj">-</div>
+    <div id="j_obj4" class="obj">-</div>
+    <div id="j_inv" class="small">Satchel</div>
+    <div id="j_back" class="btn">Back</div>
+  </div>
+
+  <div id="page_settings" class="page">
+    <div class="row"><div class="label">Movement</div><div id="s_move" class="value">Smooth</div></div>
+    <div class="row"><div class="label">Turning</div><div id="s_turn" class="value">Snap 45</div></div>
+    <div class="row"><div class="label">Comfort vignette</div><div id="s_vignette" class="value">Low</div></div>
+    <div class="row"><div class="label">Seated mode</div><div id="s_seated" class="value">Off</div></div>
+    <div class="row"><div class="label">Walk speed</div><div id="s_speed" class="value">Normal</div></div>
+    <div class="row"><div class="label">Music</div><div id="s_music" class="value">60%</div></div>
+    <div class="row"><div class="label">Effects</div><div id="s_sfx" class="value">80%</div></div>
+    <div class="row"><div class="label">Voices</div><div id="s_voice" class="value">80%</div></div>
+    <div class="row"><div class="label">Debug stats</div><div id="s_debug" class="value">Off</div></div>
+    <div id="s_back" class="btn">Back</div>
+  </div>
+</div>

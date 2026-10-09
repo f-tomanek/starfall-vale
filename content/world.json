@@ -1,0 +1,61 @@
+{
+  "spawn": { "at": "spawn", "yawDeg": 0 },
+  "zones": [
+    { "id": "beacon", "name": "Beacon Ring", "center": [0, 0, 60], "radius": 18, "fog": "#3f8f96" },
+    { "id": "wreckhaven", "name": "Wreckhaven", "center": [0, 0, -20], "radius": 40, "fog": "#3a7f88" }
+  ],
+  "waypoints": {
+    "spawn": [0, 0, 61],
+    "beacon": [0, 0, 62],
+    "warden_beacon": [0, 1.7, 57.5],
+    "path_1": [0.5, 1.8, 46],
+    "path_2": [-2.5, 1.8, 35],
+    "path_3": [1, 1.8, 24],
+    "gate": [0, 0, 15],
+    "warden_gate": [-2.2, 1.8, 13],
+    "warden_square": [-3, 1.9, -2],
+    "warden_mid": [0, 1.9, -24],
+    "warden_shrine": [0, 1.9, -43],
+    "maren_gate": [2.6, 0, 12.5],
+    "tobbin_workshop": [6.3, 0, -9],
+    "workshop_bin": [8.2, 0, -12.2],
+    "part_lens": [-6.6, 0.95, -5],
+    "part_spring": [9.6, 0.95, -6.5],
+    "part_valve": [-8.6, 0.45, -26],
+    "shrine": [0, 0, -43],
+    "shrine_console": [0, 0, -47]
+  },
+  "paths": {
+    "beacon_to_gate": ["warden_beacon", "path_1", "path_2", "path_3", "warden_gate"],
+    "square_to_shrine": ["warden_square", "warden_mid", "warden_shrine"]
+  },
+  "npcs": [
+    {
+      "character": "warden",
+      "placements": [
+        { "when": { "not": { "flag": "warden_intro_done" } }, "at": "warden_beacon" },
+        { "when": { "not": { "flag": "reached_gate" } }, "at": "warden_gate", "path": "beacon_to_gate" },
+        { "when": { "not": { "item": "pulse_lantern" } }, "at": "warden_square" },
+        { "at": "warden_shrine", "path": "square_to_shrine" }
+      ]
+    },
+    { "character": "maren", "placements": [{ "at": "maren_gate" }] },
+    { "character": "tobbin", "placements": [{ "at": "tobbin_workshop" }] }
+  ],
+  "pickups": [
+    { "item": "lens", "at": "part_lens" },
+    { "item": "spring", "at": "part_spring" },
+    { "item": "valve", "at": "part_valve" }
+  ],
+  "triggers": [
+    { "id": "t_reached_gate", "kind": "area", "at": "gate", "radius": 6, "when": { "flag": "warden_intro_done" }, "effects": [{ "setFlag": "reached_gate" }] },
+    { "id": "t_hint_grab_lens", "kind": "pickup", "item": "lens", "when": { "not": { "flag": "hint_deliver_shown" } }, "effects": [{ "setFlag": "hint_deliver_shown" }, { "hint": "hint_deliver" }] },
+    { "id": "t_hint_grab_spring", "kind": "pickup", "item": "spring", "when": { "not": { "flag": "hint_deliver_shown" } }, "effects": [{ "setFlag": "hint_deliver_shown" }, { "hint": "hint_deliver" }] },
+    { "id": "t_hint_grab_valve", "kind": "pickup", "item": "valve", "when": { "not": { "flag": "hint_deliver_shown" } }, "effects": [{ "setFlag": "hint_deliver_shown" }, { "hint": "hint_deliver" }] },
+    { "id": "t_deliver_lens", "kind": "deliver", "item": "lens", "at": "workshop_bin", "radius": 1.3, "when": { "flag": "met_tobbin" }, "effects": [{ "takeItem": "lens" }, { "setFlag": "delivered_lens" }, { "emit": "part_delivered" }] },
+    { "id": "t_deliver_spring", "kind": "deliver", "item": "spring", "at": "workshop_bin", "radius": 1.3, "when": { "flag": "met_tobbin" }, "effects": [{ "takeItem": "spring" }, { "setFlag": "delivered_spring" }, { "emit": "part_delivered" }] },
+    { "id": "t_deliver_valve", "kind": "deliver", "item": "valve", "at": "workshop_bin", "radius": 1.3, "when": { "flag": "met_tobbin" }, "effects": [{ "takeItem": "valve" }, { "setFlag": "delivered_valve" }, { "emit": "part_delivered" }] },
+    { "id": "t_shrine_pulse", "kind": "pulse", "at": "shrine_console", "radius": 3, "when": { "item": "pulse_lantern" }, "effects": [{ "setFlag": "shrine_awakened" }, { "emit": "shrine_awaken" }] }
+  ],
+  "events": ["part_delivered", "shrine_awaken", "lantern_given"]
+}

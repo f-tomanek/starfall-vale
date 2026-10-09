@@ -1,0 +1,53 @@
+{
+  "id": "warden",
+  "owner": "warden",
+  "entries": [
+    { "when": { "not": { "flag": "warden_intro_done" } }, "start": "intro_1" },
+    { "when": { "not": { "flag": "reached_gate" } }, "start": "lead" },
+    { "when": { "all": [{ "flag": "shrine_awakened" }, { "not": { "flag": "act1_briefed" } }] }, "start": "brief_1" },
+    { "when": { "flag": "act1_complete" }, "start": "after_1" },
+    { "when": { "not": { "flag": "met_maren" } }, "start": "nudge_maren" },
+    { "when": { "not": { "flag": "met_tobbin" } }, "start": "nudge_tobbin" },
+    { "when": { "not": { "item": "pulse_lantern" } }, "start": "nudge_parts" },
+    { "start": "nudge_shrine" }
+  ],
+  "nodes": {
+    "intro_1": { "text": "Welcome, Stranger. Welcome, Str- apologies, buffer.", "next": "intro_2" },
+    "intro_2": { "text": "The beacon accepted you. It has not accepted anyone in three hundred years.", "choices": [
+      { "text": "Who are you?", "next": "who" },
+      { "text": "Where am I?", "next": "where" },
+      { "text": "Did you just glitch?", "next": "glitch" }
+    ] },
+    "who": { "text": "I am the Warden, caretaker of the colony ship Meridian. The villagers call me a spirit, and I have stopped correcting them.", "next": "intro_3" },
+    "where": { "text": "Starfall Vale. The Meridian fell here long ago, and the village grew inside her hull.", "next": "intro_3" },
+    "glitch": { "text": "Certainly not. I was savoring the word Stranger.", "next": "intro_3" },
+    "intro_3": { "text": "The islands above are sinking and a storm is coming. I need hands, and you have two.", "next": "intro_4" },
+    "intro_4": { "text": "Follow me down to Wreckhaven. Mind the path, it is older than it looks.", "effects": [{ "setFlag": "warden_intro_done" }, { "hint": "hint_move" }], "end": true },
+
+    "lead": { "text": "Onward, Stranger. The village is just down the path.", "end": true },
+
+    "nudge_maren": { "text": "That is Elder Maren at the gate. Be polite, she has a staff and opinions.", "end": true },
+    "nudge_tobbin": { "text": "Look for the workshop on the right side of the hull. Follow the sound of hammering.", "end": true },
+    "nudge_parts": { "text": "Tobbin needs his parts. I would help, but I lack fingers.", "end": true },
+    "nudge_shrine": { "text": "Bring the Lantern to the console on the bridge. Then pulse it, and we shall see who is awake.", "end": true },
+
+    "brief_1": { "text": "Systems responding. Oh, that tickles!", "next": "brief_2" },
+    "brief_2": { "text": "The Meridian's heart is cold. Three Resonance Cores were scattered when we fell.", "next": "brief_3" },
+    "brief_3": { "text": "Light in the crystal forest, Motion by the broken engine, Memory on the floating isles. Find them, and I can wake.", "choices": [
+      { "text": "I'll find them.", "next": "brief_yes" },
+      { "text": "Why me?", "next": "brief_why" },
+      { "text": "What's in it for me?", "next": "brief_reward" }
+    ] },
+    "brief_why": { "text": "Because the beacon chose you, and I trust the beacon. Also, nobody else answered.", "next": "brief_yes" },
+    "brief_reward": { "text": "Gratitude, a village that does not sink, and possibly a very small hat.", "next": "brief_yes" },
+    "brief_yes": { "text": "Then the valley is in your hands. The mist will part for you once my sensors finish warming up.", "effects": [{ "setFlag": "act1_briefed" }], "end": true },
+
+    "after_1": { "text": "The mist still guards the outer zones. My sensors are recalibrating.", "choices": [
+      { "text": "Tell me about the storm.", "next": "after_storm" },
+      { "text": "Tell me about the village.", "next": "after_village" },
+      { "text": "Goodbye.", "next": "END" }
+    ] },
+    "after_storm": { "text": "Violet, loud and full of loose energy. It eats a little more of the sky each night.", "next": "after_1" },
+    "after_village": { "text": "Wreckhaven was my cargo hold once. Now it has gardens, and I approve.", "next": "after_1" }
+  }
+}

@@ -1,0 +1,9 @@
+[
+  { "id": "pulse_lantern", "name": "Pulse Lantern", "description": "Tobbin's lantern. Its pulse wakes sleeping ship machines and reveals hidden glyphs.", "kind": "tool", "color": "#ffb347", "shape": "lantern" },
+  { "id": "lens", "name": "Cracked Lens", "description": "A palm-sized lens from an old ship lamp. Only slightly cracked.", "kind": "part", "color": "#8fe3ff", "shape": "lens" },
+  { "id": "spring", "name": "Coil Spring", "description": "A very bouncy spring. Tobbin says it is load-bearing.", "kind": "part", "color": "#c0c7cc", "shape": "spring" },
+  { "id": "valve", "name": "Brass Valve", "description": "A heavy brass valve wheel from the hull's old water pipes.", "kind": "part", "color": "#d9a441", "shape": "valve" },
+  { "id": "core_light", "name": "Core of Light", "description": "A Resonance Core that hums like a held note.", "kind": "key", "color": "#c9b6ff", "shape": "core" },
+  { "id": "core_motion", "name": "Core of Motion", "description": "A Resonance Core that never quite stops spinning.", "kind": "key", "color": "#ff8a4c", "shape": "core" },
+  { "id": "core_memory", "name": "Core of Memory", "description": "A Resonance Core. Looking into it feels like remembering.", "kind": "key", "color": "#7fd8ff", "shape": "core" }
+]

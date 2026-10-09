@@ -1,0 +1,34 @@
+{
+  "id": "tobbin",
+  "owner": "tobbin",
+  "entries": [
+    { "when": { "not": { "flag": "met_tobbin" } }, "start": "first_1" },
+    { "when": { "all": [{ "flag": "delivered_lens" }, { "flag": "delivered_spring" }, { "flag": "delivered_valve" }, { "not": { "item": "pulse_lantern" } }] }, "start": "gift_1" },
+    { "when": { "not": { "item": "pulse_lantern" } }, "start": "parts_1" },
+    { "start": "chat_1" }
+  ],
+  "nodes": {
+    "first_1": { "text": "Oh, you're the Warden's stranger! I'm Tobbin, I build things.", "next": "first_2" },
+    "first_2": { "text": "Mostly things that fly. Well, things that try to fly.", "choices": [
+      { "text": "What are you building?", "next": "machine" },
+      { "text": "Can I help?", "effects": [{ "addTrust": { "character": "tobbin", "amount": 1 } }], "next": "help" }
+    ] },
+    "machine": { "text": "A flying machine! It needs a lens, a spring and a valve, and I'm out of all three.", "next": "help" },
+    "help": { "text": "Lens at the empty market stall, spring on my bench, valve by the old pipes. Drop them in my basket!", "effects": [{ "setFlag": "met_tobbin" }, { "hint": "hint_grab" }], "end": true },
+
+    "parts_1": { "text": "Lens at the market stall, spring on my bench, valve by the old pipes.", "next": "parts_2" },
+    "parts_2": { "text": "Drop them in the basket, not on me. I learned that the hard way.", "end": true },
+
+    "gift_1": { "text": "All three! You're better at this than me, and I'm the expert!", "next": "gift_2" },
+    "gift_2": { "text": "Here, take my Pulse Lantern. It wakes up old ship machines, mostly.", "effects": [{ "giveItem": "pulse_lantern" }, { "addTrust": { "character": "tobbin", "amount": 1 } }, { "emit": "lantern_given" }, { "hint": "hint_lantern" }], "next": "gift_3" },
+    "gift_3": { "text": "Take it to the shrine on the bridge. The Warden will know what to do!", "end": true },
+
+    "chat_1": { "text": "How's the Lantern? It hasn't exploded, has it?", "choices": [
+      { "text": "It works great.", "next": "chat_great" },
+      { "text": "Why do you want to fly?", "next": "chat_fly" },
+      { "text": "See you later, Tobbin.", "next": "END" }
+    ] },
+    "chat_great": { "text": "Of course it does, I built it. With a lot of help.", "next": "END" },
+    "chat_fly": { "text": "Because the islands are up there, and everyone says nobody can go. That sounds like a challenge.", "effects": [{ "setFlag": "tobbin_dream_heard" }], "next": "END" }
+  }
+}

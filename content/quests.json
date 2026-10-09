@@ -1,0 +1,39 @@
+[
+  {
+    "id": "act1_stranger",
+    "title": "The Stranger",
+    "kind": "main",
+    "act": 1,
+    "description": "A floating light woke me at an old beacon. It calls itself the Warden, and it wants me to follow it.",
+    "startWhen": { "flag": "warden_intro_done" },
+    "objectives": [
+      { "id": "reach_village", "text": "Follow the Warden down to the village", "completeWhen": { "flag": "reached_gate" }, "target": "gate" },
+      { "id": "meet_maren", "text": "Speak with the elder at the gate", "completeWhen": { "flag": "met_maren" }, "target": "maren_gate" },
+      { "id": "meet_tobbin", "text": "Find the tinkerer's workshop", "completeWhen": { "flag": "met_tobbin" }, "target": "tobbin_workshop" },
+      { "id": "bring_lens", "text": "Bring Tobbin the lens from the market stall", "completeWhen": { "flag": "delivered_lens" }, "target": "part_lens", "carry": { "item": "lens", "to": "workshop_bin" } },
+      { "id": "bring_spring", "text": "Bring Tobbin the spring from his workbench", "completeWhen": { "flag": "delivered_spring" }, "target": "part_spring", "carry": { "item": "spring", "to": "workshop_bin" } },
+      { "id": "bring_valve", "text": "Bring Tobbin the valve from the old pipes", "completeWhen": { "flag": "delivered_valve" }, "target": "part_valve", "carry": { "item": "valve", "to": "workshop_bin" } },
+      { "id": "get_lantern", "text": "Talk to Tobbin", "completeWhen": { "item": "pulse_lantern" }, "target": "tobbin_workshop" },
+      { "id": "wake_shrine", "text": "Pulse the Lantern at the console on the bridge", "completeWhen": { "flag": "shrine_awakened" }, "target": "shrine_console" },
+      { "id": "hear_warden", "text": "Hear the Warden out", "completeWhen": { "flag": "act1_briefed" }, "target": "warden_shrine" }
+    ],
+    "onComplete": [
+      { "setFlag": "act1_complete" },
+      { "startQuest": "act2_cores" },
+      { "hint": "hint_act1_done" }
+    ]
+  },
+  {
+    "id": "act2_cores",
+    "title": "Three Cores",
+    "kind": "main",
+    "act": 2,
+    "description": "The Warden needs three Resonance Cores to wake the Meridian: Light, Motion and Memory.",
+    "comingSoon": true,
+    "objectives": [
+      { "id": "core_light", "text": "Recover the Core of Light in Glimmerwood", "completeWhen": { "item": "core_light" }, "target": null },
+      { "id": "core_motion", "text": "Recover the Core of Motion in Rustdune Canyon", "completeWhen": { "item": "core_motion" }, "target": null },
+      { "id": "core_memory", "text": "Recover the Core of Memory on the Skyreach Isles", "completeWhen": { "item": "core_memory" }, "target": null }
+    ]
+  }
+]

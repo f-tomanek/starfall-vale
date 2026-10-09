@@ -1,6 +1,6 @@
 # Starfall Vale — Design Document
 
-Status: **Milestone 0, waiting for approval** · Last updated: 2026-10-09
+Status: **Milestone 1 done (vertical slice), waiting for feedback** · Design approved 2026-10-09 · Last updated: 2026-10-09
 
 This is the living design document. Every decision I make without asking you gets recorded here, under "Decision log" at the end.
 
@@ -103,8 +103,9 @@ Shared behavior for all characters: they turn their head and body toward the pla
 
 ### Stack
 - **IWSDK** (Three.js + ECS), TypeScript, Vite, scaffolded with the official `npm create @iwsdk@latest`. Exact versions are pinned in `package.json` (no `^` or `~`), with a lockfile committed.
-- **Note:** recent Meta documentation and release notes mention an IWSDK **1.0** release, so it may no longer be pre-1.0. I'll check the version actually installed when scaffolding and read the docs and the project's `AGENTS.md`/`CLAUDE.md` and skills before writing code.
-- **AI workflow:** the starter ships preconfigured MCP servers. According to the current docs they are **`iwer`** (emulator: headset and controller simulation, screenshots, console logs, ECS inspection) and **`iwsdk-rag-local`** (search over the SDK code). I found nothing named "iwsdk-runtime". I'll use whatever the scaffold actually configures. The docs don't list a render-stats tool, so the game exposes its own stats (see the Debug HUD below).
+- **Version:** IWSDK **1.0.1** (no longer pre-1.0), scaffolded with `@iwsdk/create@1.0.1` (`npm create @iwsdk@latest`). Exact versions are pinned in `package.json`.
+- **AI workflow:** the scaffold configures the **`iwsdk-runtime`** MCP server (emulator, screenshots, console logs, ECS inspection, render stats) and **`iwsdk-reference`** (SDK code search); the same features are in the `iwsdk` CLI. On this machine Windows application control blocks the managed Chromium that the server launches from `AppData`, so testing uses the same in-page IWER emulator in the desktop app's browser pane over `npm run dev:http`. I drive controllers through IWER's programmatic API and read stats from `window.__stats`.
+- **Removed `@meta-quest/metavr`:** an optional CLI in the scaffold that sends usage telemetry to Meta. It isn't needed, and the IWSDK dev plugin skips telemetry when it is absent.
 - **Content validation:** `zod` schemas, run at startup and in CI/tests.
 - **Tests:** `vitest` for engine logic and content graph analysis.
 
@@ -215,7 +216,7 @@ After each milestone: a git commit, a short changelog, a Quest 3 test checklist 
 
 | Risk | Impact | Mitigation / closest alternative |
 |---|---|---|
-| **Node.js is not installed on this machine** | Blocks Milestone 1 | You install Node.js LTS (≥ 18; 22 LTS recommended), ideally through the company software catalog or IT. See the open questions below. |
+| ~~Node.js is not installed~~ | Resolved | Node.js 24 installed by the user |
 | IWSDK APIs differ from my assumptions (young SDK) | Rework | Read the scaffold's docs, `AGENTS.md` and skills, and the RAG MCP before coding. Wrap SDK use behind thin adapters. |
 | Quest browser text readability | Eye strain | Large fonts, high contrast, tested on device. Subtitle size in settings. |
 | **"Play every quest path end-to-end in the emulator"** | Driving every combination of choices through the emulator by hand is very slow | **Alternative:** the engine plays **every** path headlessly in automated tests. In the emulator I play each distinct path (three Vex resolutions, both ledger branches, both endings) using debug-console shortcuts to skip already-tested sections. |
@@ -233,13 +234,15 @@ After each milestone: a git commit, a short changelog, a Quest 3 test checklist 
 ---
 
 ## 9. Open questions for you
-1. **Node.js:** this machine doesn't have Node.js. Can you install Node.js 22 LTS, through the company software portal or IT if that's required? It's needed to build the game.
-2. **Hosting account:** to publish online, I'll explain GitHub Pages, Netlify and Cloudflare Pages. Whether to use a personal or company account is your decision. If this is company work, check that publishing on a public host is allowed.
-3. **Project location:** I created the project at `C:\Users\ftomanek\Projects\starfall-vale`, outside AppData and OneDrive, so `node_modules` doesn't sync. Tell me if you want it elsewhere.
+1. **Hosting account:** whether the game goes on a public host (Netlify, GitHub Pages and so on), and under which account, is your call. If it is company work, check what is allowed. See the README.
 
----
+## 10. Milestone 1 notes (what was built)
+- **Scope delivered:** Beacon Ring, the footpath, and the Wreckhaven hull with gate, market, workshop, houses and the bridge shrine. The Warden (guides along the path, glitch idle), Maren (trust choice) and Tobbin. The whole of Act 1, the Pulse Lantern, save/load (autosave plus Continue/New Game), and the settings, journal, tips and debug HUD.
+- **Placeholders for later milestones:** the three outer zones appear only as distant silhouettes (islands, crystal spire, engine). Act 2 exists in the journal as "coming soon". Sela, Hesk, Vex and Kip are defined in content but not placed yet.
+- **Measured (emulator, stereo):** about 46 to 60 draw calls and 83 to 87k triangles in total (both eyes), against a budget of 150 calls and 500k triangles. Real frame rate has to be measured on the Quest with the debug HUD.
+- **World coordinates:** north is −Z. Waypoint Y in `content/world.json` is height above the walkable surface (`groundAt` = terrain plus the shrine deck and ramp).
 
-## 10. Decision log
+## 11. Decision log
 | Date | Decision | Reason |
 |---|---|---|
 | 2026-10-09 | Procedural art and audio, no third-party assets in v1 | No licensing risk, tiny download, fits the low-poly style |
@@ -249,3 +252,12 @@ After each milestone: a git commit, a short changelog, a Quest 3 test checklist 
 | 2026-10-09 | Vex standoff: persuade, trade or sneak, each with trust consequences | Matches the brief, and gives each path weight in the ending |
 | 2026-10-09 | Sela is secretly Vex's sister (ledger secret) | Connects side quest to main quest |
 | 2026-10-09 | Project lives in `C:\Users\ftomanek\Projects\starfall-vale` | AppData is not a project location, and OneDrive would sync `node_modules` |
+| 2026-10-09 | Project lives in `C:UserstomanekProjectsstarfall-vale` | Confirmed by the user's approval |
+| 2026-10-09 | Static world built in code (ECS entities), scene JSON holds only sky/IBL | The world is procedural; scene JSON cannot describe merged procedural meshes |
+| 2026-10-09 | UIKitML for interactive panels (dialogue, menu, tips); canvas billboards for nameplates, bubbles, prompts and toasts | MSDF text stays crisp for reading; billboards are cheap for short labels |
+| 2026-10-09 | Desktop: drag-to-look instead of pointer lock | Clicking UI panels and characters keeps working without leaving pointer lock |
+| 2026-10-09 | Distance grab only inside VR; E to carry on desktop | A mouse ray pulling objects toward the camera felt wrong |
+| 2026-10-09 | Content is bundled with `import.meta.glob` at build time | Simple static hosting; edits need a rebuild (`npm run build`) |
+| 2026-10-09 | Separate `--mode http` dev server on port 8082 | Plain HTTP on localhost is a secure context for WebXR and works in the built-in browser; HTTPS (8081) stays for the Quest over Wi-Fi |
+| 2026-10-09 | Story flag changes are saved one frame later | Quest onComplete effects must be included in the save |
+| 2026-10-09 | Teleport-only mode removes only the controller slide binding | Keyboard movement on desktop keeps working |
