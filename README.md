@@ -207,6 +207,11 @@ Project notes for AI-assisted work are in `AGENTS.md` / `CLAUDE.md` (generated b
 
 ## Known issues
 
+- **Only one dev server can run per project at a time.** If `npm run dev:runtime` or
+  `npm run dev:http` prints nothing and seems stuck, another one is still running, possibly
+  in another terminal window. Stop it with **Ctrl+C** in that window, then start again. If it
+  still won't start, run `npx iwsdk dev down` once.
+
 - On some company laptops, Windows policy stops IWSDK's managed emulator browser from starting
   (`npm run dev` reports `spawn UNKNOWN`). Use `npm run dev:http` and open the page in Chrome
   or Edge instead. The in-page emulator works the same.
