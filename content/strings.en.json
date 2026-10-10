@@ -22,10 +22,11 @@
   "toast_quest_done": "Quest complete: {name}",
   "toast_objective": "{text}",
   "hint_talk": "Point at the Warden and pull the trigger to talk. Desktop: click it, or press E.",
-  "hint_move": "Left stick: walk. Right stick: turn. Push the right stick down to teleport. Desktop: WASD to walk, click to look around.",
+  "hint_move": "Left stick: walk. Right stick: turn. Push the right stick down to teleport. Desktop: WASD to walk, drag the mouse to look around.",
   "hint_grab": "Point at a part and hold the trigger to grab it. Desktop: press E to pick up and E to drop.",
   "hint_deliver": "Carry the part to Tobbin's basket and let go above it.",
   "hint_lantern": "The Pulse Lantern hangs from your left hand. Pull the left trigger to pulse. Desktop: press F.",
   "hint_menu": "Press the menu button on the left controller for your journal and settings. Desktop: Tab or Esc.",
-  "hint_act1_done": "Act 1 complete. Your progress has been saved. The next zones open in a future build."
+  "hint_act1_done": "Act 1 complete. The mist has thinned: Glimmerwood (west), Rustdune Canyon (east) and the Skyreach Isles (north, by the cargo lift) are open to explore.",
+  "toast_mist": "The mist is too thick to go further."
 }

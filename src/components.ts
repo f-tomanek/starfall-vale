@@ -12,4 +12,9 @@ export const Pickup = createComponent('Pickup', {
   key: { type: Types.String, default: '' },
 });
 
-export default defineComponents([Npc, Pickup]);
+/** Something the player can use (lever, mirror, pylon). Handlers live in rt.usables. */
+export const Usable = createComponent('Usable', {
+  id: { type: Types.String, default: '' },
+});
+
+export default defineComponents([Npc, Pickup, Usable]);

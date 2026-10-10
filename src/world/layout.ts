@@ -3,7 +3,7 @@
  * and groundAt(). Story positions (NPCs, items, triggers) live in
  * content/world.json; this file only describes the buildings.
  */
-import { heightAt } from './terrain.js';
+import { ISLANDS, heightAt } from './heightfield.js';
 
 export const HULL = {
   /** Hull cross-section circle: center height and radius. */
@@ -32,6 +32,7 @@ export function groundAt(x: number, z: number): number {
   if (Math.abs(x) < p.rampX && z <= p.rampZ0 && z >= p.z1) {
     return (p.height * (p.rampZ0 - z)) / (p.rampZ0 - p.z1);
   }
+  for (const i of ISLANDS) if (Math.hypot(x - i.x, z - i.z) < i.r) return i.y;
   return heightAt(x, z);
 }
 

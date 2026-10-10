@@ -26,6 +26,12 @@ export interface DialogueApi {
   readonly talkingTo: string | null;
 }
 
+export interface UsableHandler {
+  /** Prompt text, e.g. "Pull the lift lever". */
+  label: () => string;
+  use: () => void;
+}
+
 export interface Runtime {
   world: World;
   content: Content;
@@ -37,6 +43,8 @@ export interface Runtime {
   mode: Mode;
   ui: UiApi;
   dialogue: DialogueApi;
+  /** Handlers for entities with the Usable component, keyed by Usable.id. */
+  usables: Map<string, UsableHandler>;
   /** Current zone id (from content/world.json zones). */
   zone: string;
   /** Fade the view to black and back; `mid` runs while fully black. */

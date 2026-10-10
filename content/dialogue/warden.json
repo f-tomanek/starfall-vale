@@ -40,9 +40,9 @@
     ] },
     "brief_why": { "text": "Because the beacon chose you, and I trust the beacon. Also, nobody else answered.", "next": "brief_yes" },
     "brief_reward": { "text": "Gratitude, a village that does not sink, and possibly a very small hat.", "next": "brief_yes" },
-    "brief_yes": { "text": "Then the valley is in your hands. The mist will part for you once my sensors finish warming up.", "effects": [{ "setFlag": "act1_briefed" }], "end": true },
+    "brief_yes": { "text": "Then the valley is in your hands. Look, the mist is already thinning.", "effects": [{ "setFlag": "act1_briefed" }], "end": true },
 
-    "after_1": { "text": "The mist still guards the outer zones. My sensors are recalibrating.", "choices": [
+    "after_1": { "text": "The mist has thinned to the west, the east and the north. My sensors are still locating the cores.", "choices": [
       { "text": "Tell me about the storm.", "next": "after_storm" },
       { "text": "Tell me about the village.", "next": "after_village" },
       { "text": "Goodbye.", "next": "END" }

@@ -22,14 +22,18 @@ import {
   type Entity,
   type Group,
 } from '@iwsdk/core';
-import { Npc, Pickup } from '../components.js';
+import { Npc, Pickup, Usable } from '../components.js';
 import { TextBillboard } from '../ui/billboard.js';
 import { groundAt, surfaceAt } from '../world/layout.js';
 import { buildItem } from '../world/models.js';
 import { haptic, immersive, rt, t, viewer, viewerForward, viewerPosition, waypoint } from '../runtime.js';
 import { NpcSystem } from './npc.js';
 
-type Focus = { kind: 'npc'; id: string; pos: Vector3 } | { kind: 'pickup'; entity: Entity; pos: Vector3 } | null;
+type Focus =
+  | { kind: 'npc'; id: string; pos: Vector3 }
+  | { kind: 'pickup'; entity: Entity; pos: Vector3 }
+  | { kind: 'usable'; id: string; pos: Vector3 }
+  | null;
 
 const TALK_RANGE = 3.2;
 const PICK_RANGE = 2.3;
@@ -40,6 +44,8 @@ export class InteractionSystem extends createSystem({
   pickups: { required: [Pickup] },
   pickupPressed: { required: [Pickup, Pressed] },
   grabbed: { required: [Pickup, Grabbed] },
+  usables: { required: [Usable] },
+  usablePressed: { required: [Usable, Pressed] },
 }) {
   private focus: Focus = null;
   private prompt!: TextBillboard;
@@ -57,6 +63,7 @@ export class InteractionSystem extends createSystem({
   private tmp2 = new Vector3();
   private awakenGlow = 0;
   private npcPos = new Map<string, Vector3>();
+  private usablePos = new Map<Entity, Vector3>();
 
   init(): void {
     this.prompt = new TextBillboard({ width: 0.9, fontPx: 40, maxLines: 1, background: 'rgba(14,22,30,0.75)' });
@@ -80,6 +87,13 @@ export class InteractionSystem extends createSystem({
     }
     this.resetPickups();
 
+
+    // Levers and other usables: point + trigger (VR) or click (desktop)
+    this.queries.usablePressed.subscribe('qualify', (e) => {
+      if (rt.mode !== 'play' || rt.dialogue.talkingTo || rt.ui.menuOpen) return;
+      const o = e.object3D;
+      if (o && o.getWorldPosition(this.tmp).distanceTo(viewerPosition(this.eye)) < 6) this.use(e.getValue(Usable, 'id') as string);
+    });
 
     // Talk by pointing + trigger (VR) or clicking (desktop)
     this.queries.npcPressed.subscribe('qualify', (e) => {
@@ -166,6 +180,14 @@ export class InteractionSystem extends createSystem({
   private talk(id: string): void {
     if (rt.dialogue.talkingTo || rt.ui.menuOpen) return;
     if (rt.dialogue.open(id)) haptic('right', 0.3, 30);
+  }
+
+  private use(id: string): void {
+    const h = rt.usables.get(id);
+    if (!h) return;
+    rt.audio.sfx('click');
+    haptic('right', 0.4, 40);
+    h.use();
   }
 
   private carry(e: Entity): void {
@@ -294,6 +316,17 @@ export class InteractionSystem extends createSystem({
         }
       }
     }
+    for (const e of this.queries.usables.entities) {
+      const o = e.object3D;
+      if (!o || !o.visible) continue;
+      if (!this.usablePos.has(e)) this.usablePos.set(e, new Vector3());
+      const p = o.getWorldPosition(this.usablePos.get(e) as Vector3);
+      const score = this.score(p, PICK_RANGE + 0.7);
+      if (score < bestScore) {
+        bestScore = score;
+        best = { kind: 'usable', id: e.getValue(Usable, 'id') as string, pos: p };
+      }
+    }
     if (!this.carried) {
       for (const e of this.queries.pickups.entities) {
         const o = e.object3D;
@@ -404,6 +437,12 @@ export class InteractionSystem extends createSystem({
     if (f.kind === 'npc') {
       this.showPrompt(`${key} ${t('prompt_talk', { name: rt.content.characters[f.id].name })}`, f.pos);
       if (actPressed) this.talk(f.id);
+    } else if (f.kind === 'usable') {
+      const h = rt.usables.get(f.id);
+      if (h) {
+        this.showPrompt(`${key} ${h.label()}`, f.pos);
+        if (actPressed) this.use(f.id);
+      }
     } else {
       const name = rt.content.items[f.entity.getValue(Pickup, 'item') as string].name;
       this.showPrompt(vr ? `Point + trigger: ${t('prompt_pickup', { name })}` : `${key} ${t('prompt_pickup', { name })}`, f.pos);

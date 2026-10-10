@@ -26,6 +26,7 @@ import { InteractionSystem } from './systems/interaction.js';
 import { MenuSystem } from './systems/menu.js';
 import { NpcSystem } from './systems/npc.js';
 import { PlayerSystem } from './systems/player.js';
+import { ZoneSystem } from './systems/zones.js';
 import { buildVillage } from './world/village.js';
 
 function showFatal(title: string, lines: string[]): void {
@@ -65,6 +66,7 @@ async function main(): Promise<void> {
   rt.game = new Game(content);
   rt.audio = new AudioEngine();
   rt.mode = 'title';
+  rt.usables = new Map();
   rt.zone = content.world.spawn.at === 'spawn' ? 'beacon' : '';
   rt.fade = (mid) => mid();
 
@@ -75,7 +77,7 @@ async function main(): Promise<void> {
 
   // Atmosphere: fog limits view distance (and GPU cost); one directional light.
   const fogColor = new Color(content.world.zones[0]?.fog ?? '#3f8f96');
-  world.scene.fog = new Fog(fogColor, 28, 115);
+  world.scene.fog = new Fog(fogColor, 30, 150);
   const sun = new DirectionalLight('#ffe2b8', 1.5);
   sun.position.set(-40, 60, 30);
   world.scene.add(sun, new HemisphereLight('#a8d8e0', '#3a4a3c', 1.4));
@@ -97,7 +99,9 @@ async function main(): Promise<void> {
     .registerSystem(InteractionSystem)
     .registerSystem(DialogueSystem)
     .registerSystem(MenuSystem)
-    .registerSystem(FxSystem);
+    .registerSystem(FxSystem)
+    .registerSystem(ZoneSystem);
+  console.info(`[world] zone triangles: ${Math.round((world.getSystem(ZoneSystem)?.triangles ?? 0) / 1000)}k`);
 
   // Quest 3 performance: request 72 Hz and fixed foveation when VR starts.
   world.visibilityState.subscribe((state) => {

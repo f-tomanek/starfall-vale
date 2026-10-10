@@ -6,6 +6,7 @@
  *  - a playthrough solver proves every quest is completable, every node can be
  *    seen in play, and no reachable state soft-locks the main story
  */
+import { BRIDGES } from '../world/heightfield.js';
 import { Game } from './game.js';
 import { END, type Condition, type Content, type Effect } from './schema.js';
 import { cloneState, createInitialState, evaluate, type GameState } from './state.js';
@@ -135,6 +136,15 @@ export function validateReferences(c: Content): ValidationReport {
       if (!waypoints.has(p.at)) errors.push(`world npc ${npc.character}: unknown waypoint "${p.at}"`);
       if (p.path && !w.paths[p.path]) errors.push(`world npc ${npc.character}: unknown path "${p.path}"`);
     });
+  }
+  for (const zn of w.zones) checkCond(`world zone ${zn.id} openWhen`, zn.openWhen);
+  for (const l of w.lifts) {
+    checkCond(`world lift ${l.id}`, l.when);
+    for (const wp of [l.bottom, l.top]) if (!waypoints.has(wp)) errors.push(`world lift ${l.id}: unknown waypoint "${wp}"`);
+  }
+  for (const b of w.bridges) {
+    checkCond(`world bridge ${b.id}`, b.when);
+    if (!BRIDGES.some((x) => x.id === b.id)) errors.push(`world bridge: unknown bridge id "${b.id}" (see src/world/heightfield.ts)`);
   }
   for (const pk of w.pickups) {
     if (!c.items[pk.item]) errors.push(`world pickup: unknown item "${pk.item}"`);

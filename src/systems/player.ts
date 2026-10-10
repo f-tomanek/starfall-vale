@@ -6,13 +6,14 @@
  * - fades, autosave, audio listener
  */
 import { BackSide, Color, LocomotionSystem, Mesh, MeshBasicMaterial, Quaternion, SphereGeometry, Vector3, createSystem, type Fog } from '@iwsdk/core';
-import { distToPath } from '../world/terrain.js';
-import { immersive, rt, saveNow, viewer } from '../runtime.js';
+import { regionAt } from '../world/heightfield.js';
+import { immersive, rt, saveNow, t, viewer } from '../runtime.js';
 
 const SEATED_OFFSET = 0.45;
 const AUTOSAVE_SECONDS = 60;
 
 export class PlayerSystem extends createSystem({}) {
+  private static instance: PlayerSystem | null = null;
   private yawDelta = 0;
   private pitch = 0;
   private dragging = false;
@@ -32,6 +33,7 @@ export class PlayerSystem extends createSystem({}) {
   private quat = new Quaternion();
 
   init(): void {
+    PlayerSystem.instance = this;
     // Fade sphere around the camera (a mesh, not post-processing).
     this.fadeMesh = new Mesh(
       new SphereGeometry(0.3, 12, 8),
@@ -82,6 +84,16 @@ export class PlayerSystem extends createSystem({}) {
     loco?.setPlayerPosition(pos);
     rt.world.player.position.copy(pos);
     if (yawDeg !== undefined) rt.world.player.rotation.set(0, (yawDeg * Math.PI) / 180, 0);
+    // A deliberate move (lift, load) into an open area is the new safe spot, so the
+    // fall check does not pull the player back to where they came from.
+    const self = PlayerSystem.instance;
+    const zones = rt.content.world.zones;
+    const open = regionAt(pos.x, pos.z, zones, (id) => rt.game.check(zones.find((z) => z.id === id)?.openWhen)) !== null;
+    if (self && open) {
+      self.lastValid.copy(pos);
+      self.validTimer = 0.5;
+      self.outsideTimer = 0;
+    }
   }
 
   update(delta: number): void {
@@ -129,41 +141,38 @@ export class PlayerSystem extends createSystem({}) {
 
     if (rt.mode !== 'play') return;
 
-    // Zones
+    // Zones and the Mist (closed zones and off-road areas turn the player back)
     const px = player.position.x;
     const pz = player.position.z;
-    let zone = rt.zone;
-    let best = Infinity;
-    for (const z of rt.content.world.zones) {
-      const d = Math.hypot(px - z.center[0], pz - z.center[2]);
-      if (d < z.radius && d < best) {
-        best = d;
-        zone = z.id;
+    const groundY = player.position.y - (immersive() && rt.settings.seated ? SEATED_OFFSET : 0);
+    const zones = rt.content.world.zones;
+    const region = regionAt(px, pz, zones, (id) => rt.game.check(zones.find((z) => z.id === id)?.openWhen));
+    if (region && region !== rt.zone) {
+      rt.zone = region;
+      const def = zones.find((z) => z.id === region);
+      if (def) {
+        this.fogTarget.set(def.fog);
+        rt.audio.setZone(def.ambience);
       }
-    }
-    if (zone !== rt.zone) {
-      rt.zone = zone;
-      rt.audio.setZone(zone);
-      const def = rt.content.world.zones.find((z) => z.id === zone);
-      if (def) this.fogTarget.set(def.fog);
     }
     const fog = this.scene.fog as Fog | null;
     if (fog) fog.color.lerp(this.fogTarget, dt * 0.5);
 
-    // The Mist boundary: outside every zone and away from the path, fade back.
-    const inside = best < Infinity || distToPath(px, pz) < 7;
-    if (inside) {
+    // Falling off a floating island also counts as leaving safe ground.
+    const fell = groundY < this.lastValid.y - 4;
+    if (region !== null && !fell) {
       this.outsideTimer = 0;
       this.validTimer -= dt;
       if (this.validTimer <= 0) {
         this.lastValid.copy(player.position);
+        this.lastValid.y = groundY;
         this.validTimer = 0.5;
       }
     } else if (!this.fadeMesh.visible) {
       this.outsideTimer += dt;
-      if (this.outsideTimer > 0.4) {
+      if (this.outsideTimer > (fell ? 0.15 : 0.4)) {
         this.outsideTimer = 0;
-        rt.ui.toast('The mist is too thick to go further.');
+        if (!fell) rt.ui.toast(t('toast_mist'));
         const back = this.lastValid.clone();
         rt.fade(() => PlayerSystem.teleport(back));
       }

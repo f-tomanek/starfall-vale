@@ -20,6 +20,7 @@ import {
 } from '@iwsdk/core';
 import { GeoBuilder, Materials, lerpColor, meshFrom, rng } from './geo.js';
 import { HULL, PLATFORM, SOLIDS, groundAt } from './layout.js';
+import { GLIMMER, RUST, distToRoad } from './heightfield.js';
 import { PATH_POINTS, buildTerrainGeometry, heightAt } from './terrain.js';
 
 export const PALETTE = {
@@ -303,29 +304,13 @@ export function buildVillage(): VillageMeshes {
     }
   }
 
-  // ------------------------------------------------------ distant landmarks
-  // Skyreach Isles (north), Glimmerwood spire (west), Rustdune engine (east).
-  // Low-detail silhouettes for now; full zones arrive in milestone 2.
-  for (let k = 0; k < 6; k++) {
-    const x = -40 + k * 16 + (rand() - 0.5) * 8;
-    const z = -95 - rand() * 20;
-    const y = 26 + rand() * 26;
-    const r = 5 + rand() * 6;
-    lit.add(new ConeGeometry(r, r * 1.6, 7), '#4d5a66', { pos: [x, y - r * 0.8, z], rot: [Math.PI, rand(), 0] });
-    lit.add(new CylinderGeometry(r, r * 0.95, 1.2, 7), '#4f7a62', { pos: [x, y + 0.6, z] });
-  }
-  lit.add(box(1.2, 8, 1.2), '#3d4248', { pos: [8, 58, -105] });
-  glow.add(new SphereGeometry(0.7, 6, 4), '#ff5a4a', { pos: [8, 62.5, -105] });
-  lit.add(new ConeGeometry(4, 34, 6), PALETTE.violet, { pos: [-80, heightAt(-80, -10) + 15, -10] });
-  lit.add(new ConeGeometry(2.5, 20, 5), '#a787ff', { pos: [-74, heightAt(-74, -16) + 8, -16], rot: [0.2, 0, 0.15] });
-  lit.add(new CylinderGeometry(7, 9, 26, 10, 1, true), PALETTE.rustDark, { pos: [78, heightAt(78, 0) + 6, 0], rot: [0.3, 0, Math.PI / 2 - 0.25] });
-  lit.add(new IcosahedronGeometry(5, 0), PALETTE.rust, { pos: [72, heightAt(72, 6) + 3, 6] });
-
   // Scattered rocks and shrubs on the valley floor
   for (let k = 0; k < 140; k++) {
     const x = (rand() - 0.5) * 220;
     const z = (rand() - 0.5) * 220;
     if (Math.abs(x) < 20 && z < 22 && z > -62) continue;
+    // Zones have their own props
+    if (Math.hypot(x - GLIMMER.x, z - GLIMMER.z) < 44 || Math.hypot(x - RUST.x, z - RUST.z) < 46 || distToRoad(x, z) < 4) continue;
     if (Math.hypot(x, z - 62) < 12) continue;
     const y = heightAt(x, z);
     if (rand() < 0.5) {

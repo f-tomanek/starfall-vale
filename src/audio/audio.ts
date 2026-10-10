@@ -43,6 +43,10 @@ export class AudioEngine {
   private birdTimer = 4;
   private volumes = { music: 0.6, sfx: 0.8, voice: 0.8 };
   private zone = 'beacon';
+  private windGain: GainNode | null = null;
+  private zoneTimer = 3;
+  /** Listener position, for placing ambient one-shots around the player. */
+  private ear = { x: 0, y: 0, z: 0 };
 
   get ready(): boolean {
     return this.ctx !== null && this.ctx.state === 'running';
@@ -92,11 +96,23 @@ export class AudioEngine {
     this.buses.ambience.gain.setTargetAtTime(this.volumes.sfx * 0.5, t, 0.2);
   }
 
+  /** Ambience preset: beacon, village, forest, canyon or sky. */
   setZone(zone: string): void {
     this.zone = zone;
-    if (this.windFilter && this.ctx) {
-      this.windFilter.frequency.setTargetAtTime(zone === 'beacon' ? 700 : 420, this.ctx.currentTime, 2);
+    if (this.windFilter && this.windGain && this.ctx) {
+      const preset: Record<string, [number, number]> = {
+        beacon: [700, 0.12],
+        village: [420, 0.08],
+        forest: [320, 0.07],
+        canyon: [950, 0.2],
+        sky: [1400, 0.18],
+      };
+      const [freq, gain] = preset[zone] ?? preset.village;
+      const now = this.ctx.currentTime;
+      this.windFilter.frequency.setTargetAtTime(freq, now, 2);
+      this.windGain.gain.setTargetAtTime(gain, now, 2);
     }
+    this.zoneTimer = 1.5;
   }
 
   /** Update the listener from the camera (call every frame). */
@@ -118,6 +134,9 @@ export class AudioEngine {
       l.setPosition(p.x, p.y, p.z);
       l.setOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
     }
+    this.ear.x = p.x;
+    this.ear.y = p.y;
+    this.ear.z = p.z;
   }
 
   /** Per-frame: schedules music chords and ambient birds. */
@@ -128,6 +147,8 @@ export class AudioEngine {
       this.musicTimer = 9;
       this.playChord(CHORDS[this.chord++ % CHORDS.length]);
     }
+    this.zoneTimer -= dt;
+    if (this.zoneTimer <= 0) this.zoneSound();
     this.birdTimer -= dt;
     if (this.birdTimer <= 0) {
       this.birdTimer = 5 + Math.random() * 9;
@@ -255,6 +276,7 @@ export class AudioEngine {
     this.windFilter = f;
     const g = ctx.createGain();
     g.gain.value = 0.12;
+    this.windGain = g;
     // Slow gusts
     const lfo = ctx.createOscillator();
     lfo.frequency.value = 0.07;
@@ -273,6 +295,41 @@ export class AudioEngine {
     hum.connect(hg).connect(this.buses.ambience);
     hum.start();
     this.setZone(this.zone);
+  }
+
+  /** A positioned one-shot that gives each zone its character. */
+  private zoneSound(): void {
+    const a = Math.random() * Math.PI * 2;
+    const d = 4 + Math.random() * 10;
+    const at = { x: this.ear.x + Math.cos(a) * d, y: this.ear.y + Math.random() * 3, z: this.ear.z + Math.sin(a) * d };
+    const amb = this.buses.ambience;
+    switch (this.zone) {
+      case 'forest': {
+        // Crystal chimes: a few bell partials
+        const base = [880, 1047, 1175, 1319, 1568][Math.floor(Math.random() * 5)];
+        for (const [m, g] of [[1, 0.05], [2.76, 0.02], [5.4, 0.01]]) this.tone(base * m, 2.4, { type: 'sine', gain: g, at, bus: amb, attack: 0.004 });
+        this.zoneTimer = 1.5 + Math.random() * 3;
+        return;
+      }
+      case 'canyon':
+        // Metal creaking in the wind
+        this.tone(90 + Math.random() * 60, 1.1, { type: 'sawtooth', gain: 0.025, slide: 1.4, at, bus: amb, attack: 0.3 });
+        this.noiseBurst(0.6, 2400, { gain: 0.05, at, q: 8 });
+        this.zoneTimer = 4 + Math.random() * 6;
+        return;
+      case 'sky':
+        // Airy swells
+        this.tone(330 * (Math.random() < 0.5 ? 1 : 1.5), 3.5, { type: 'sine', gain: 0.03, at, bus: amb, attack: 1.2 });
+        this.zoneTimer = 3 + Math.random() * 4;
+        return;
+      case 'village':
+        // Tobbin hammering somewhere in the workshop
+        for (let i = 0; i < 3; i++) this.noiseBurst(0.07, 1800, { gain: 0.12, at: { x: 9, y: 1, z: -8 }, q: 3, delay: i * 0.32 });
+        this.zoneTimer = 6 + Math.random() * 8;
+        return;
+      default:
+        this.zoneTimer = 5;
+    }
   }
 
   private bird(): void {

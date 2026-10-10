@@ -226,6 +226,10 @@ export const WorldSchema = z
           center: Vec3,
           radius: z.number().positive(),
           fog: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+          /** While false, the Mist turns the player back at this zone's edge. */
+          openWhen: ConditionSchema.optional(),
+          /** Ambient sound preset (see src/audio/audio.ts). */
+          ambience: z.enum(['beacon', 'village', 'forest', 'canyon', 'sky']).default('village'),
         })
         .strict(),
     ),
@@ -234,6 +238,12 @@ export const WorldSchema = z
     npcs: z.array(z.object({ character: Id, placements: z.array(PlacementSchema).min(1) }).strict()),
     pickups: z.array(z.object({ item: Id, at: Id, when: ConditionSchema.optional() }).strict()),
     triggers: z.array(TriggerSchema),
+    /** Lifts: ride between two waypoints with a fade while `when` holds. */
+    lifts: z
+      .array(z.object({ id: Id, bottom: Id, top: Id, when: ConditionSchema.optional(), brokenText: z.string().default('It does not move.') }).strict())
+      .default([]),
+    /** Light bridges (ids from src/world/heightfield.ts): solid while `when` holds. */
+    bridges: z.array(z.object({ id: Id, when: ConditionSchema.optional() }).strict()).default([]),
     /** World events dialogue/triggers may `emit`; the runtime must handle each. */
     events: z.array(Id),
   })

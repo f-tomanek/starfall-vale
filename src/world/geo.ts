@@ -9,6 +9,7 @@ import {
   DoubleSide,
   Euler,
   Float32BufferAttribute,
+  InstancedMesh,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
@@ -120,6 +121,24 @@ export function meshFrom(builder: GeoBuilder, material: Material, name: string):
   mesh.name = name;
   mesh.matrixAutoUpdate = false;
   mesh.updateMatrix();
+  return mesh;
+}
+
+/**
+ * One draw call for many copies of the same prototype. `tints` multiply the
+ * prototype's vertex colors per instance.
+ */
+export function instanced(proto: GeoBuilder, material: Material, places: Place[], name: string, tints?: string[]): InstancedMesh {
+  const mesh = new InstancedMesh(proto.build(), material, places.length);
+  const m = new Matrix4();
+  places.forEach((p, i) => {
+    mesh.setMatrixAt(i, placeMatrix(p, m));
+    if (tints) mesh.setColorAt(i, _c.set(tints[i % tints.length]));
+  });
+  mesh.instanceMatrix.needsUpdate = true;
+  if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+  mesh.computeBoundingSphere();
+  mesh.name = name;
   return mesh;
 }
 

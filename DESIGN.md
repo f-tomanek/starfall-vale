@@ -1,6 +1,6 @@
 # Starfall Vale — Design Document
 
-Status: **Milestone 1 done (vertical slice), waiting for feedback** · Design approved 2026-10-09 · Last updated: 2026-10-09
+Status: **Milestone 2 done (world), waiting for feedback** · Design approved 2026-10-09 · Last updated: 2026-10-10
 
 This is the living design document. Every decision I make without asking you gets recorded here, under "Decision log" at the end.
 
@@ -242,6 +242,14 @@ After each milestone: a git commit, a short changelog, a Quest 3 test checklist 
 - **Measured (emulator, stereo):** about 46 to 60 draw calls and 83 to 87k triangles in total (both eyes), against a budget of 150 calls and 500k triangles. Real frame rate has to be measured on the Quest with the debug HUD.
 - **World coordinates:** north is −Z. Waypoint Y in `content/world.json` is height above the walkable surface (`groundAt` = terrain plus the shrine deck and ramp).
 
+## 10b. Milestone 2 notes (the world)
+- **Zones:** Glimmerwood (west, crystal forest with about 95 instanced crystal trees, Hesk's grove, the sealed eye shrine, the 36 m crystal spire), Rustdune Canyon (east, dunes, glass shards, layered mesas, the broken engine nacelle with a smoke column, the salvager camp), and Skyreach Isles (north, five floating islands, the cargo lift, five light bridges, the antenna array with a slowly pulsing beacon). Roads lead from the village gate to each zone.
+- **Gating (content-driven):** zones have `openWhen` in `content/world.json` and open after Act 1. Until then the Mist fades the player back. The lift and bridges have `when` conditions, also tied to Act 1 for now (Milestone 3 swaps in the repair and sequence puzzles).
+- **Comfort:** the lift ride is a fade transition, not a moving camera. Invisible rims keep players on the islands, and falling off one fades you back to safe ground.
+- **Ambient life:** per-zone particles (crystal motes, sand dust, engine smoke, camp embers, sky wisps), 5 bird flocks (one instanced mesh), drifting clouds (one mesh), and per-zone soundscapes (crystal chimes, metal creaks, airy swells, Tobbin's hammering).
+- **Performance:** zone detail is hidden beyond zone radius + 85 m (fog ends at 150 m). Landmarks stay visible. Measured on desktop: 14 to 45 draw calls and 36 to 51k triangles depending on location. A headless test (`tests/zones.test.ts`) keeps each zone within 12 draw calls and 60k triangles.
+- **Testing note:** the desktop app's browser pane pauses rendering when hidden, so the in-browser tests step the game loop manually (`world.update`) where needed.
+
 ## 11. Decision log
 | Date | Decision | Reason |
 |---|---|---|
@@ -261,3 +269,9 @@ After each milestone: a git commit, a short changelog, a Quest 3 test checklist 
 | 2026-10-09 | Separate `--mode http` dev server on port 8082 | Plain HTTP on localhost is a secure context for WebXR and works in the built-in browser; HTTPS (8081) stays for the Quest over Wi-Fi |
 | 2026-10-09 | Story flag changes are saved one frame later | Quest onComplete effects must be included in the save |
 | 2026-10-09 | Teleport-only mode removes only the controller slide binding | Keyboard movement on desktop keeps working |
+| 2026-10-10 | Pure world math in `src/world/heightfield.ts` (no Three.js) | Unit-testable Mist regions, bridge slopes and ground heights |
+| 2026-10-10 | Zone streaming by distance instead of separate level loads | The world is small (250 m); hiding detail meshes is enough and avoids loading hitches |
+| 2026-10-10 | Lift ride with fade instead of a moving platform | The brief requires no forced camera movement |
+| 2026-10-10 | Bridges toggle locomotion colliders (deck vs. rim gates) | Inactive bridges cannot be walked on, and their gaps cannot be fallen through |
+| 2026-10-10 | Terrain colors per grid vertex | Smooth road and zone edges while faces stay flat-shaded |
+| 2026-10-10 | Generic `Usable` component with handlers in `rt.usables` | Lift levers now; mirrors, pylons and doors in Milestone 3 reuse it |

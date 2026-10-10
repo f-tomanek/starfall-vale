@@ -7,7 +7,7 @@ into a misty valley. You arrive as the Stranger, the only one its half-awake AI 
 Built with Meta's Immersive Web SDK (IWSDK 1.0.1: Three.js and an entity-component system),
 TypeScript and Vite. It is all static files: no server, no accounts, no analytics.
 
-> **Status: Milestone 1 (vertical slice).** Act 1 is playable from start to finish.
+> **Status: Milestone 2 (world).** Act 1 is playable, and after it the whole valley opens up: Glimmerwood, Rustdune Canyon and the Skyreach Isles (via the cargo lift and light bridges). The rest of the story arrives in Milestone 3.
 > See [DESIGN.md](DESIGN.md) for the full plan.
 
 ---
@@ -52,6 +52,7 @@ play with mouse and keyboard.
 | Talk, pick up, drop | **E**, or click a character or part |
 | Dialogue choices | click, or keys **1 to 4**; **Space** or **Enter** to continue |
 | Pulse Lantern | **F** |
+| Use a lever (for example the cargo lift) | **E** near it, or click it |
 | Menu, journal, settings | **Tab** or **Esc** |
 
 ### Quest controls
