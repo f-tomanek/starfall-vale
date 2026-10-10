@@ -16,6 +16,15 @@ TypeScript and Vite. It is all static files: no server, no accounts, no analytic
 
 You need **Node.js 20.19+, 22.12+ or 24** (`node --version` should print one of those).
 
+Open a terminal (Command Prompt or PowerShell) and **go to the project folder first**. Every
+`npm` command below only works from inside it:
+
+```bash
+cd C:\Users\ftomanek\Projects\starfall-vale
+```
+
+Then, the first time only:
+
 ```bash
 npm install
 ```
